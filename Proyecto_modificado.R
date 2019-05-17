@@ -1,4 +1,5 @@
 library("dplyr")
+library("ggplot2")
 ##Base de datos de hurtos personas
 Hurto_a_personas_2019 <- read.csv("C:/Users/prestamour/Downloads/Hurto_a_personas_2019.csv",encoding = "UTF-8")
 View(Hurto_a_personas_2019)
@@ -48,4 +49,21 @@ View(Incautacion_Final)
 ##Analisis descriptivo
 promedio <- sum(Hurto_Final$n)/(sum(Hurto_Final$Poblacion)/2)
 sum(Hurto_Final$Poblacion)/2
+
+base_final <- left_join(Hurto_Final,Incautacion_Final, by = "departamento")
+
+base_filtrada <- base_final%>%filter(arma_fuego == 1)
+View(base_filtrada)
+
+attach(base_filtrada)
+p <- ggplot(x = factor(Departamento.x),y = n.x) + geom_boxplot()
+
+plot(base_filtrada$n.y,base_filtrada$n.x,xlab = "Numero de armas incautadas",ylab = "Numero de robos")
+cor(n.y,n.x)
+modelo <- lm(n.y~n.x)
+abline(a = modelo$coefficients[1],b = modelo$coefficients[2])
+plot(x = factor(Departamento.x),n.x,xlab = "Departamentos",ylab = "Numero de robos",type = "o")
+with(base_filtrada,text(Departamento.x,labels = row.names(Departamento.x)))
+g <- ggplot(Hurto_a_personas,aes(Sexo)) + geom_bar()
+g <- g + coord_flip()
 
